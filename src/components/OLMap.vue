@@ -47,19 +47,14 @@
 import { ref, inject } from "vue";
 
 const props = defineProps({
-  // coordinates: {
-  //   type: Object,
-  //   required: true,
-  //   default: []
-  // },
   locationX: {
     type: Number,
-    required: true,
+    required: false,
     default: 39.76087898627143,
   },
   locationY: {
     type: Number,
-    required: true,
+    required: false,
     default: 47.23134789834382,
   },
   zoom: {
@@ -67,26 +62,6 @@ const props = defineProps({
     required: true,
     default: 12,
   },
-  // strokeColor: {
-  //   type: String,
-  //   required: true,
-  //   default: "red",
-  // },
-  // fillColor: {
-  //   type: String,
-  //   required: true,
-  //   default: "red",
-  // },
-  // strokeWidth: {
-  //   type: Number,
-  //   required: true,
-  //   default: 10,
-  // },
-  // radius: {
-  //   type: Number,
-  //   required: true,
-  //   default: 10,
-  // },
 });
 
 const projection = ref("EPSG:4326");
@@ -94,8 +69,11 @@ const rotation = ref(0);
 const format = inject("ol-format");
 const geoJson = new format.GeoJSON();
 
-
-
+const setLocation = (event) => {
+  const coordinates = event.mapBrowserEvent.coordinate;
+  props.locationX = coordinates[0];
+  props.locationY = coordinates[1];
+};
 </script>
 
 <style lang="scss">

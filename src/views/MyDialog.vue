@@ -16,15 +16,20 @@
                 <v-col cols="12" md="12">
                   <v-text-field
                     label="ФИО*"
-                    v-bind:value="title"
-                    @input="title = $event.target.value"
+                    v-model="newApplication.applicant"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="12">
-                  <v-text-field label="Адрес"></v-text-field>
+                  <v-text-field
+                    label="Адрес"
+                    v-model="newApplication.address"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="12">
-                  <v-text-field label="Phone Number"></v-text-field>
+                  <v-text-field
+                    label="Phone Number"
+                    v-model="newApplication.phoneNumber"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-select
@@ -38,6 +43,7 @@
                     ]"
                     label="Тип аварии*"
                     required
+                    v-model="newApplication.typeOfAccident"
                   ></v-select>
                 </v-col>
                 <v-col cols="12">
@@ -50,6 +56,7 @@
                     ]"
                     label="Приоритет*"
                     required
+                    v-model="newApplication.typeOfPriorities"
                   ></v-select>
                 </v-col>
               </v-row>
@@ -66,7 +73,7 @@
             color="blue-darken-1"
             variant="text"
             @click="
-              createPost();
+              saveApplication();
               dialog = false;
             "
           >
@@ -80,10 +87,30 @@
 
 <script setup>
 import { ref } from "vue";
+import { useStore } from "vuex";
 
+const store = useStore();
 const dialog = ref(false);
+const newApplication = ref({
+  id: null,
+  address: "",
+  phoneNumber: "",
+  typeOfAccident: "",
+  typeOfPriorities: "",
+  applicant: "",
+});
 
-function createPost() {
-  console.log(1);
-}
+const saveApplication = () => {
+  newApplication.value.id = store.state.applications.length;
+  store.commit("addApplication", newApplication.value);
+
+  localStorage.setItem(
+    "applications",
+    JSON.stringify(store.state.applications)
+  );
+
+  dialog.value = false;
+};
 </script>
+
+<style scoped></style>
