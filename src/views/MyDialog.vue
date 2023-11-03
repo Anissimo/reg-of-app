@@ -2,7 +2,9 @@
   <v-row justify="start ml-0">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> Создайте новую заявку! </v-btn>
+        <v-btn color="primary" v-bind="props" @click="openForm">
+          Создайте новую заявку!
+        </v-btn>
       </template>
 
       <v-card>
@@ -24,6 +26,59 @@
                     label="Адрес"
                     v-model="newApplication.address"
                   ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="12">
+                  <div style="height: 400px; width: 100%">
+                    <ol-map
+                      :loadTilesWhileAnimating="true"
+                      :loadTilesWhileInteracting="true"
+                      style="height: 400px"
+                    >
+                      <ol-view
+                        ref="view"
+                        :center="center"
+                        :zoom="zoom"
+                        :projection="projection"
+                      />
+
+                      <ol-tile-layer>
+                        <ol-source-osm />
+                      </ol-tile-layer>
+
+                      <ol-vector-layer>
+                        <ol-source-vector :projection="projection">
+                          <ol-interaction-draw
+                            v-if="drawing"
+                            type="Point"
+                            @drawend="handleDrawEnd"
+                          >
+                            <ol-style>
+                              <ol-style-stroke
+                                color="blue"
+                                :width="2"
+                              ></ol-style-stroke>
+                              <ol-style-fill
+                                color="rgba(0, 0, 0, 0.4)"
+                              ></ol-style-fill>
+                            </ol-style>
+                          </ol-interaction-draw>
+                        </ol-source-vector>
+
+                        <ol-style>
+                          <ol-style-stroke
+                            color="red"
+                            :width="2"
+                          ></ol-style-stroke>
+                          <ol-style-fill
+                            color="rgba(255,255,255,0.1)"
+                          ></ol-style-fill>
+                          <ol-style-circle :radius="5">
+                            <ol-style-fill color="black"></ol-style-fill>
+                          </ol-style-circle>
+                        </ol-style>
+                      </ol-vector-layer>
+                    </ol-map>
+                  </div>
                 </v-col>
                 <v-col cols="12" md="12">
                   <v-text-field
@@ -62,11 +117,11 @@
               </v-row>
             </form>
           </v-container>
-          <small>*indicates required field</small>
+          <small>*Заполните необходимые строки</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="blue-darken-1" variant="text" @click="closeForm">
             Close
           </v-btn>
           <v-btn
@@ -88,6 +143,7 @@
 <script setup>
 import { ref } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const store = useStore();
 const dialog = ref(false);
@@ -98,18 +154,59 @@ const newApplication = ref({
   typeOfAccident: "",
   typeOfPriorities: "",
   applicant: "",
+  location: { x: null, y: null },
 });
 
+const center = ref([39.723284, 47.23135]);
+const projection = ref("EPSG:4326");
+const zoom = ref(12);
+const drawing = ref(true);
+
+const router = useRouter();
+
+function handleDrawEnd(event) {
+  const feature = event.feature;
+  const coords = feature.getGeometry().getCoordinates();
+  drawing.value = false;
+  newApplication.value.location = {
+    x: coords[0],
+    y: coords[1],
+  };
+}
+
+const resetForm = () => {
+  newApplication.value = {
+    id: null,
+    address: "",
+    phoneNumber: "",
+    typeOfAccident: "",
+    typeOfPriorities: "",
+    applicant: "",
+    location: { x: null, y: null },
+  };
+};
+const closeForm = () => {
+  dialog.value = false;
+  router.push({ path: "/statement" }); // Возвращаемся обратно на страницу журнала
+};
 const saveApplication = () => {
   newApplication.value.id = store.state.applications.length;
   store.commit("addApplication", newApplication.value);
 
+  // Сохраняем данные в localStorage
   localStorage.setItem(
     "applications",
     JSON.stringify(store.state.applications)
   );
 
   dialog.value = false;
+  router.push({ path: "/statement" }); 
+  resetForm();
+};
+
+const openForm = () => {
+  dialog.value = true;
+  router.push({ path: "/statement/add" }); 
 };
 </script>
 

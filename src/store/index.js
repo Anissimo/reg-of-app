@@ -3,14 +3,13 @@ import dictionary from "@/modules/dictionary";
 
 const store = createStore({
   state: {
-    // 39.76087898627143, 47.23134789834382
     applications: [
       {
         id: 0,
         address: "ул. Авроры, 211А, Самара, Самарская обл., 443080",
-        location: { x: 40, y: 48 }, // location.x
+        location: { x: 39.723284, y: 47.23135 }, // { "position": [ 39.723284, 47.23135 ] }
         typeOfAccident: dictionary.typeOfAccident.rush,
-        typeOfPriorities: dictionary.typeOfPriorities.immediate,
+        typeOfPriorities: dictionary.typeOfPriorities.low,
         applicant: "Анисимов Григорий Васильевич",
         phoneNumber: "89277369542",
       },

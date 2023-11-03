@@ -11,12 +11,12 @@ export default createRouter({
       name: "journal",
       component: MyJournal,
       children: [
-          {
-            path: "add",
-            name: "dialog",
-            component: MyDialog,
-          },
-        ]
+        {
+          path: "add",
+          name: "dialog",
+          component: MyDialog,
+        },
+      ],
     },
     {
       path: "/map",
