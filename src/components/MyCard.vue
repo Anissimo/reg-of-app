@@ -45,6 +45,7 @@ const props = defineProps({
 
 const openForm = (app) => {
   store.commit("editApplication", app); // Обновляем состояние заявки
+  store.commit("setEditingMode", true); // Устанавливаем editingMode в true
   store.commit("setDialog", true);
   router.push({ path: "/statement/add" });
 };
