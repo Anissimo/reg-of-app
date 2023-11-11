@@ -2,7 +2,7 @@
   <v-row justify="start ml-0">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="openForm">
+        <v-btn class="ml-4" color="primary" v-bind="props" @click="openForm">
           Создайте новую заявку!
         </v-btn>
       </template>
@@ -141,11 +141,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 const store = useStore();
+const router = useRouter();
+
 const dialog = ref(false);
 const newApplication = ref({
   id: null,
@@ -161,8 +163,6 @@ const center = ref([39.723284, 47.23135]);
 const projection = ref("EPSG:4326");
 const zoom = ref(12);
 const drawing = ref(true);
-
-const router = useRouter();
 
 function handleDrawEnd(event) {
   const feature = event.feature;
@@ -185,13 +185,27 @@ const resetForm = () => {
     location: { x: null, y: null },
   };
 };
+
 const closeForm = () => {
   dialog.value = false;
   router.push({ path: "/statement" }); // Возвращаемся обратно на страницу журнала
 };
+
 const saveApplication = () => {
-  newApplication.value.id = store.state.applications.length;
-  store.commit("addApplication", newApplication.value);
+  if (store.state.editingMode) {
+    // Если мы в режиме редактирования, обновляем существующую заявку
+    const existingApplicationIndex = store.state.applications.findIndex(
+      (app) => app.id === newApplication.value.id
+    );
+    store.commit("updateApplication", {
+      index: existingApplicationIndex,
+      application: newApplication.value,
+    });
+  } else {
+    // Если мы в режиме создания, добавляем новую заявку
+    newApplication.value.id = store.state.applications.length;
+    store.state.applications.push(newApplication.value);
+  }
 
   // Сохраняем данные в localStorage
   localStorage.setItem(
@@ -199,15 +213,32 @@ const saveApplication = () => {
     JSON.stringify(store.state.applications)
   );
 
-  dialog.value = false;
-  router.push({ path: "/statement" }); 
-  resetForm();
+  store.commit("clearEditingApplication");
+  store.commit("setDialog", false);
+  resetForm(); // Очистите форму после сохранения
+  router.push({ path: "/statement" });
+};
+
+const editApplication = (app) => {
+  newApplication.value = { ...app };
+  store.commit("setEditingMode", true); // Устанавливаем editingMode в true
+  store.commit("setDialog", true);
+  router.push({ path: "/statement/add" });
 };
 
 const openForm = () => {
-  dialog.value = true;
-  router.push({ path: "/statement/add" }); 
+  resetForm();
+  store.commit("setEditingMode", false); // Устанавливаем editingMode в false
+  store.commit("setDialog", true);
+  router.push({ path: "/statement/add" });
 };
+
+watchEffect(() => {
+  dialog.value = store.state.dialog;
+  if (store.state.editingApplication) {
+    newApplication.value = { ...store.state.editingApplication };
+  }
+});
 </script>
 
 <style scoped></style>

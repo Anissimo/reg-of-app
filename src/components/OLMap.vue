@@ -23,7 +23,9 @@
           <ol-geom-point :coordinates="[loc.x, loc.y]"></ol-geom-point>
           <ol-style>
             <ol-style-circle :radius="5">
-              <ol-style-fill :color="priorityColor"></ol-style-fill>
+              <ol-style-fill
+                :color="getPriorityColor(loc.priority)"
+              ></ol-style-fill>
               <ol-style-stroke :color="'black'" :width="2"></ol-style-stroke>
             </ol-style-circle>
           </ol-style>
@@ -57,11 +59,6 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  priorityColor: {
-    type: String,
-    required: false,
-    default: "red",
-  },
   draggableMarkers: {
     type: Boolean,
     required: false,
@@ -87,6 +84,16 @@ onMounted(() => {
     });
   }
 });
+
+const getPriorityColor = (priority) => {
+  const priorityColors = {
+    "1 – незамедлительно": "red",
+    "2 – высокий": "orange",
+    "3 – средний": "yellow",
+    "4 – низкий": "green",
+  };
+  return priorityColors[priority] || "blue";
+};
 </script>
 
 <style scoped></style>
