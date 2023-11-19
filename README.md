@@ -1,8 +1,5 @@
 # reg-of-app
-
-### run my project in gh-pages 
-
-https://anissimo.github.io/reg-of-app/
+ 
 
 ---
 
