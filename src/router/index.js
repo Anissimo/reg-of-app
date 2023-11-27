@@ -7,6 +7,10 @@ export default createRouter({
   history: createWebHashHistory(),
   routes: [
     {
+      path: "/",
+      redirect: "/statement", // Добавляем редирект с корневого маршрута
+    },
+    {
       path: "/statement",
       name: "journal",
       component: MyJournal,

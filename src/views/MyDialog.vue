@@ -122,7 +122,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="closeForm">
-            Close
+            Закрыть
           </v-btn>
           <v-btn
             color="blue-darken-1"
@@ -132,7 +132,7 @@
               dialog = false;
             "
           >
-            Save
+            Сохранить
           </v-btn>
         </v-card-actions>
       </v-card>
