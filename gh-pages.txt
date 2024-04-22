@@ -1,0 +1,13 @@
+
+On remote repository delete the "gh-pages" branch. 
+
+In you local repository run this command: npm run build 
+
+git add dist -f 
+
+git commit -m [your commit message here]
+
+git subtree push --prefix dist origin gh-pages 
+
+if anyone has a quicker process please feel free to update this! but I found this the fastest way to push up to gh-pages.
+02:10 Tue Apr 23 2024
